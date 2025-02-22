@@ -1,0 +1,26 @@
+{
+  "name": "create_web_backend",
+  "version": "1.0.0",
+  "description": "BACKEND OF CREATE_WEB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muditrajsade/create_web_backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/muditrajsade/create_web_backend/issues"
+  },
+  "homepage": "https://github.com/muditrajsade/create_web_backend#readme",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "path": "^0.12.7"
+  }
+}
