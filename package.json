@@ -18,9 +18,11 @@
   },
   "homepage": "https://github.com/muditrajsade/create_web_backend#readme",
   "dependencies": {
+    "axios": "^1.7.9",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "firebase-admin": "^13.1.0",
     "path": "^0.12.7"
   }
 }
