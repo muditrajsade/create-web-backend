@@ -2,7 +2,8 @@ let x = require('express');
 let app = x();
 let bodyParser = require('body-parser');
 let path = require('path');
-const axios = require('axios');
+let fileUpload = require("express-fileupload");
+let axios = require('axios');
 let cors = require('cors');
 
 app.use(
@@ -12,7 +13,7 @@ app.use(
 );
 app.use(x.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(fileUpload());
 var admin = require("firebase-admin");
 
 var serviceAccount = {
@@ -35,31 +36,97 @@ admin.initializeApp({
 });
 
 
-const db = admin.firestore();
+let db = admin.firestore();
 
-const VERCEL_API = "https://api.vercel.com/v13/deployments";
-const VERCEL_API_KEY = "y6EIOyPP08W456ILGeB7FSbX";
+//let VERCEL_API = "https://api.vercel.com/v13/deployments";
+//let VERCEL_API_KEY = "y6EIOyPP08W456ILGeB7FSbX";
 
-app.post('/add_git_hub_url',async function(req,res){
+app.post('/parse_files',async function(req,res){
     try {
-        let b = req.body.url;
-        const response = await axios.post(VERCEL_API, {
-            name: "user-react-project",
-            gitSource: {
-                type: "github",
-                repo: b.replace("https://github.com/", "").replace(".git", ""),
 
-            },
-        }, {
-            headers: {
-                Authorization: `Bearer ${VERCEL_API_KEY}`,
-                "Content-Type": "application/json",
-            },
-        });
+        
+        let csscontent = req.files.css_file.data.toString("utf-8");
+        let htmlcontent = req.files.html_file.data.toString("utf-8");
+        let jscontent = req.files.js_file.data.toString("utf-8");
 
-        const deploymentUrl = response.data.url;
-        await db.collection('react_components').add({ url:deploymentUrl });
-        res.status(200).json({ message: "GitHub URL added successfully", id: docRef.id });
+        
+       
+
+        if (htmlcontent.includes("<style>") && htmlcontent.includes("</style>")) {
+            htmlcontent = htmlcontent.replace("<style>", `<style>\n${csscontent}\n`);
+
+            
+        } else {
+            let cssFileName = req.body.css_file_name; // Get the CSS file name from request
+            let linkRegex = new RegExp(`<link\\s+rel=["']stylesheet["']\\s+href=["'][^"']*${cssFileName}[^"']*["']\\s*\\/?>`, "i");
+
+            if (linkRegex.test(htmlcontent)) {
+    // Replace only the matching <link> tag with inline CSS
+                htmlcontent = htmlcontent.replace(linkRegex, `<style>\n${csscontent}\n</style>`);
+            } else {
+    // If the <link> tag with the specific CSS file is not found, append <style> at the beginning of <head>
+                htmlcontent = htmlcontent.replace("<head>", `<head>\n<style>\n${csscontent}\n</style>`);
+            }
+        }
+
+
+        //if (htmlcontent.includes("<script>") && htmlcontent.includes("</script>")) {
+            // Insert JS content before the first <script> tag
+            // Extract all JavaScript inside <script> tags
+            /*let scriptMatches = htmlcontent.match(/<script[^>]*>([\s\S]*?)<\/script>/g);
+
+            let combinedJS = "";
+
+// If script tags exist, merge their content
+            if (scriptMatches) {
+                scriptMatches.forEach(scriptTag => {
+                let scriptContent = scriptTag.match(/<script[^>]*>([\s\S]*?)<\/script>/);
+                    if (scriptContent && scriptContent[1]) {
+                        combinedJS += scriptContent[1] + "\n"; // Merge JS content
+                    }
+                });
+
+    // Remove all existing <script> tags from the HTML
+            htmlcontent = htmlcontent.replace(/<script[^>]*>[\s\S]*?<\/script>/g, "");
+            }
+
+// Append the new combined <script> tag at the end of <body>
+            htmlcontent = htmlcontent.replace("</body>", `<script>\n${combinedJS}\n${jscontent}\n</script>\n</body>`);*/
+
+        
+            // If no <script> tag exists, add JS at the end of <body>
+            let jsFileName = req.body.js_file_name; // Get JS file name from request
+            let scriptRegex = new RegExp(`<script\\s+[^>]*src=["'][^"']*${jsFileName}[^"']*["'][^>]*>\\s*</script>`, "gi");
+
+            if(scriptRegex.test(htmlcontent)){
+                // Remove the specific <script> tag if found
+                    htmlcontent = htmlcontent.replace(scriptRegex, "");
+
+            // Append the inline <script> at the end of <body>
+                    htmlcontent = htmlcontent.replace("</body>", `<script>\n${jscontent}\n</script>\n</body>`);
+
+            }
+            else{
+                htmlcontent = htmlcontent.replace("</html>", `<script>\n${jscontent}\n</script>\n</html>`);
+
+            }
+
+
+
+        
+
+        console.log(htmlcontent);
+        res.json({n:htmlcontent});
+
+
+        
+
+
+
+        
+
+        
+        
     } catch (error) {
         console.error("Error saving GitHub URL:", error);
         res.status(500).json({ error: "Internal Server Error" });
