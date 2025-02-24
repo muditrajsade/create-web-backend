@@ -5,7 +5,7 @@ let path = require('path');
 let fileUpload = require("express-fileupload");
 let axios = require('axios');
 let cors = require('cors');
-
+const juice = require("juice");
 app.use(
     cors({
         origin: '*',
@@ -47,12 +47,14 @@ app.post('/parse_files',async function(req,res){
         
         let csscontent = req.files.css_file.data.toString("utf-8");
         let htmlcontent = req.files.html_file.data.toString("utf-8");
-        let jscontent = req.files.js_file.data.toString("utf-8");
+        
+
+
 
         
        
-
-        if (htmlcontent.includes("<style>") && htmlcontent.includes("</style>")) {
+        //css content
+        /*if (htmlcontent.includes("<style>") && htmlcontent.includes("</style>")) {
             htmlcontent = htmlcontent.replace("<style>", `<style>\n${csscontent}\n`);
 
             
@@ -67,7 +69,7 @@ app.post('/parse_files',async function(req,res){
     // If the <link> tag with the specific CSS file is not found, append <style> at the beginning of <head>
                 htmlcontent = htmlcontent.replace("<head>", `<head>\n<style>\n${csscontent}\n</style>`);
             }
-        }
+        }*/
 
 
         //if (htmlcontent.includes("<script>") && htmlcontent.includes("</script>")) {
@@ -95,7 +97,8 @@ app.post('/parse_files',async function(req,res){
 
         
             // If no <script> tag exists, add JS at the end of <body>
-            let jsFileName = req.body.js_file_name; // Get JS file name from request
+            //at th end
+            /*let jsFileName = req.body.js_file_name; // Get JS file name from request
             let scriptRegex = new RegExp(`<script\\s+[^>]*src=["'][^"']*${jsFileName}[^"']*["'][^>]*>\\s*</script>`, "gi");
 
             if(scriptRegex.test(htmlcontent)){
@@ -109,14 +112,18 @@ app.post('/parse_files',async function(req,res){
             else{
                 htmlcontent = htmlcontent.replace("</html>", `<script>\n${jscontent}\n</script>\n</html>`);
 
-            }
+            }*/
 
 
 
         
 
-        console.log(htmlcontent);
-        res.json({n:htmlcontent});
+                const docRef = await db.collection("react_components").add({
+                    html_code:htmlcontent,
+                    css_code:csscontent,
+                  });
+              
+                  console.log("Document added with ID:", docRef.id);
 
 
         
@@ -138,6 +145,51 @@ app.post('/parse_files',async function(req,res){
 
 });
 
+
+app.post('/fetch_all',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("react_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div" + " id=" + '"' +  pplt + '"' + ">" + ytr.html_code + "</div>";
+
+            ytr.css_code = ytr.css_code.replace(/\.(\w+)/g, `#${pplt} .$1`);
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
 app.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
