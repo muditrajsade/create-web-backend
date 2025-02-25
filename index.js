@@ -169,9 +169,9 @@ app.post('/fetch_all',async function(req,res){
 
             let pplt = ytr.id;
 
-            ytr.html_code = "<div" + " id=" + '"' +  pplt + '"' + ">" + ytr.html_code + "</div>";
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
 
-            ytr.css_code = ytr.css_code.replace(/\.(\w+)/g, `#${pplt} .$1`);
+            
 
 
 
