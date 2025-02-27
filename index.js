@@ -1,3 +1,4 @@
+require('dotenv').config();
 let x = require('express');
 let app = x();
 let bodyParser = require('body-parser');
@@ -20,8 +21,8 @@ var admin = require("firebase-admin");
 var serviceAccount = {
     "type": "service_account",
     "project_id": "createweb-bd362",
-    "private_key_id": "311dc06d2de2125dbfc5bfc9c9577324fdd23d1c",
-    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDajNgSYgm4C5km\nr723ORrw7fdGSEThbHnVJ3wnTyQ/9g23PvYrRD65ekXXLWTZHQutdy/BnVzAZAfd\nKIkpaivRrdt8wTOk2H8+HXlk9RpDrTqooWl6awo9JFxL0Mmwk6JAeLVepxWiuchr\nvT4zLN5gWBz66qyLayd/SIli1ijJgWs6kl+YdnFptSwwMITcdTNLGM+RZqYPRlRb\ndOMGEFTscAsaxgqxfgSRRcipTbNRIGNnHrglP2N7hHPP9WmIGfWvLH6/CTGlZAYW\nrCozlntOWj3Jygf3gQ116sOKmSQmYM98xyIDlkQ+GuC1QC2TrsXb2LGPasSBeAMG\nzUFyA1thAgMBAAECggEAALM5LThmDXJQkJeZJwtKWT2a6F1KhrIWMxMJ/lZ+IEwT\ni8vqZhW1MXsJOpzrLPifSSRHyXINijJ71bcXtuOvnZ+l44i7J47XvAFESnjwR0mY\nlbIULFunzA2387h4z+1uJHCajKHCg4uery0rVAbDlNmNaLacHEN47DsFUSUsWuZj\nJt8B3IF6yd+oiZlO0z/JmZrxIUAO3Zui43sOLiO4xBNmJTMrOVN7McxHVTTEV/QD\n+gq6AS5GYLvOWEijx9QaFLTzn78QEru8WHFp48wYWAN+QD5kcHfMemjT8IGGdM+a\nCvsQbGYJA8o9F5lYPiDJnSVDR+vgmkmktou/1DZDAQKBgQD6yVR4JAGxAky+qWkr\nLFfLI++iUom76y+NpH9AjcUzFbwIdwk3al7h49zfKO1pogP/8lPv59xfqudyd5ay\nxlEWd4wUuGFbJXsCF8jaDccTT6qu6OEuYzWeUnhG7xcgwKeas+VSNABZRH9vSuCb\n1v6VdJePOXeMZ4LfMgpLZVQh4QKBgQDfF/RhOkVK/GSmOGQ2ovHrrN0iV2ctKJVL\nVdslFxa8kdWAzeGnKBTSUChaPUNXqtzCgA1pd6diAQNXDT4XqZ2xfncVkatVy6uk\n5G5NEhbf5eL79KBgaxPwwHRFerP6mp7wPqc+mBOfbqqZxyAf1OMb+8q2WIAvIroS\n6Nn6SdlpgQKBgQDxjIc6bFvgtPlcTuoH9l7dP1CpRNx6zmzv/Xe/oo1ExfNlJ9oN\nsPuQkRuFKfN54d3+YNZt5SICVyczvnG84XzqqdyXfHvxAWm4O1ZuiASt2fbpH078\nkfvr8Tz9/X2GQ2lrfUgsY//N+0bO2Az8rRhqtXDhN5Wo+243MghuVDuzoQKBgQC5\n8rx1wdz5yG+YAE6/H4fnOTlEI3fTMw1lMpWrT5ha6m77oh8gdY8NUVShCokz7C1/\nTL5hFyOD03ZWO6pyjKTsyY02hCk8JLvXf7LUOGyqiHFuMpLuarG/LJp9Qu36xqAN\nfRtnV9ibPeGitU94WLhHndJztEZ7g0V293CgZqd5gQKBgDdZnbwcWQ+PIhuU/r8W\nlGpnbzwgbRPfM0LTP4EAoX/Zf4mNnbYtbpyivObLvwkoMv7wcHimgkdC17iuV6G+\ndvUagSey6hWYOBZ+9jwgdqYaOfTnHMiyLzLs5bDAVNdYzwN8bxQ5n7gErntHvG/q\nOY+o68GLr9qqo7gf9p0szr0k\n-----END PRIVATE KEY-----\n",
+    "private_key_id": "2303412db1b33d4e34e969634bfc9963cc5ca55b",
+    "private_key": process.env.FIREBASE_SERVICE_ACCOUNT,
     "client_email": "firebase-adminsdk-fbsvc@createweb-bd362.iam.gserviceaccount.com",
     "client_id": "101321310547065060941",
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -30,6 +31,7 @@ var serviceAccount = {
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40createweb-bd362.iam.gserviceaccount.com",
     "universe_domain": "googleapis.com"
   }
+  
   
 
 admin.initializeApp({
@@ -48,6 +50,160 @@ app.post('/parse_files',async function(req,res){
         
         let csscontent = req.files.css_file.data.toString("utf-8");
         let htmlcontent = req.files.html_file.data.toString("utf-8");
+
+        let xsw = req.body.bootstrap_css;
+        let ksw = req.body.bootstrap_js;
+        let abdf = req.body.component;
+
+        console.log(xsw);
+        console.log(ksw);
+        console.log(abdf);
+
+        if(abdf == "Buttons"){
+
+            const docRef = await db.collection("button_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+        if(abdf == "Carousel"){
+
+            const docRef = await db.collection("carousel_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+        if(abdf == "Navbar"){
+
+            const docRef = await db.collection("navbar_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+        if(abdf == "Accordion"){
+            const docRef = await db.collection("accordion_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+        if(abdf == "Alerts"){
+            const docRef = await db.collection("alert_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+        if(abdf == "Button Group"){
+            const docRef = await db.collection("button_group_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+        }
+
+        if(abdf == "Card"){
+
+            const docRef = await db.collection("card_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+        if(abdf == "Dropdowns"){
+
+            const docRef = await db.collection("dropdown_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+        
+
+    
+
+        if(abdf == "Badge"){
+
+            const docRef = await db.collection("badge_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+
+        }
+
+        if(abdf=="List Group"){
+
+            const docRef = await db.collection("list_group_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+        if(abdf=="Collapse"){
+
+            const docRef = await db.collection("collapse_components").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+
+
         
 
 
@@ -119,12 +275,7 @@ app.post('/parse_files',async function(req,res){
 
         
 
-                const docRef = await db.collection("react_components").add({
-                    html_code:htmlcontent,
-                    css_code:csscontent,
-                  });
-              
-                  console.log("Document added with ID:", docRef.id);
+                
 
 
         
@@ -147,7 +298,7 @@ app.post('/parse_files',async function(req,res){
 });
 
 
-app.post('/fetch_all',async function(req,res){
+/*app.post('/fetch_all',async function(req,res){
 
     try {
         const collectionRef = db.collection("react_components"); // Replace with your collection name
@@ -190,7 +341,505 @@ app.post('/fetch_all',async function(req,res){
 
 
 
+});*/
+
+app.post('/fetch_all_buttons',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("button_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
 });
+
+app.post('/fetch_all_accordian',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("accordion_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+app.post('/fetch_all_alert',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("alert_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+app.post('/fetch_all_badge',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("badge_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+app.post('/fetch_all_button_group',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("button_group_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+app.post('/fetch_all_card',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("card_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+app.post('/fetch_all_carousel',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("carousel_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+
+app.post('/fetch_all_collapse',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("collapse_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+app.post('/fetch_all_dropdown',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("dropdown_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+app.post('/fetch_all_list_grp',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("list_group_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+
+app.post('/fetch_all_navbar',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("navbar_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
 app.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
