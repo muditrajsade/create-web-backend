@@ -495,7 +495,7 @@ app.post('/fetch_all_badge',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -509,7 +509,7 @@ app.post('/fetch_all_badge',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
@@ -585,7 +585,7 @@ app.post('/fetch_all_card',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -599,7 +599,7 @@ app.post('/fetch_all_card',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
