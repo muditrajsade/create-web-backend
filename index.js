@@ -360,7 +360,7 @@ app.post('/fetch_all_buttons',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -374,7 +374,7 @@ app.post('/fetch_all_buttons',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
@@ -450,7 +450,7 @@ app.post('/fetch_all_alert',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -464,7 +464,7 @@ app.post('/fetch_all_alert',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
@@ -540,7 +540,7 @@ app.post('/fetch_all_button_group',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -554,7 +554,7 @@ app.post('/fetch_all_button_group',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
@@ -676,7 +676,7 @@ app.post('/fetch_all_collapse',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -690,7 +690,7 @@ app.post('/fetch_all_collapse',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
@@ -721,7 +721,7 @@ app.post('/fetch_all_dropdown',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -735,7 +735,7 @@ app.post('/fetch_all_dropdown',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
@@ -766,7 +766,7 @@ app.post('/fetch_all_list_grp',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -780,7 +780,7 @@ app.post('/fetch_all_list_grp',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
@@ -812,7 +812,7 @@ app.post('/fetch_all_navbar',async function(req,res){
 
         
 
-        for(let rcv=0;rcv<data.length;rcv++){
+        /*for(let rcv=0;rcv<data.length;rcv++){
             let ytr = data[rcv];
             console.log(ytr);
 
@@ -826,7 +826,7 @@ app.post('/fetch_all_navbar',async function(req,res){
 
 
 
-        }
+        }*/
 
         
         console.log(data);
@@ -840,6 +840,52 @@ app.post('/fetch_all_navbar',async function(req,res){
 
 });
 
+app.post('/post_project',async function(req,res){
+
+    let codes = req.body.codes;
+    let pages = req.body.pages;
+    let email = req.body.email;
+    let project_title = req.body.project_title;
+
+    const docRef = await db.collection("user_projects").add({
+        email:email,
+        project_title:project_title,
+        pages:pages,
+        codes:codes
+      });
+  
+      console.log("Document added with ID:", docRef.id);
+      res.json({success:"successfull"});
+
+
+
+});
+app.post('/fetch_projects',async function (req,res) {
+
+    try{
+
+        const collectionRef = db.collection("user_projects"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+    }
+    catch(error){
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+
+    }
+    
+})
 app.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
