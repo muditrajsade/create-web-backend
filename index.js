@@ -876,7 +876,21 @@ app.post('/fetch_projects',async function (req,res) {
             data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
         });
 
-        
+        //res.json({data:data});
+
+        let d=[];
+
+        for(let gvc=0;gvc<data.length;gvc++){
+            let k = data[gvc];
+
+            if(k.email == req.body.email){
+                d.push(k);
+
+            }
+        }
+        console.log("pp");
+
+        res.json({data:d});
 
     }
     catch(error){
