@@ -7,6 +7,9 @@ let fileUpload = require("express-fileupload");
 let axios = require('axios');
 let cors = require('cors');
 const juice = require("juice");
+
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 //testing as repo name changed
 app.use(
     cors({
@@ -43,6 +46,27 @@ let db = admin.firestore();
 
 //let VERCEL_API = "https://api.vercel.com/v13/deployments";
 //let VERCEL_API_KEY = "y6EIOyPP08W456ILGeB7FSbX";
+
+
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({ 
+  cloud_name: 'dp71rx6nx', 
+  secure: true,
+  api_key: '135874591211376', 
+  api_secret: 'OePsrIqU3S9FYMMOHCLp3cCuH2k' 
+});
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: 'uploads', // Cloudinary folder name
+      allowed_formats: ['jpg', 'png', 'jpeg', 'gif'], // Allowed file types
+    },
+  });
+  
+  const upload = multer({ storage: storage });
+
 
 app.post('/parse_files',async function(req,res){
     try {
@@ -959,6 +983,26 @@ app.post('/fetch_templates',async function(req,res){
 
 
 });
+
+app.post('/upload', upload.single('file'), async (req, res) => {
+    try {
+      const file = req.file; // File uploaded to Cloudinary
+      if (!file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+  
+      // Send response in GrapesJS format
+      res.json({
+        data: [
+          { src: file.path } // Cloudinary URL of uploaded image
+        ]
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to upload image' });
+    }
+  });
+  
 app.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
