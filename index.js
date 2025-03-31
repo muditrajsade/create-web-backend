@@ -298,6 +298,8 @@ app.post('/parse_files',async function(req,res){
 });
 
 
+
+
 /*app.post('/fetch_all',async function(req,res){
 
     try {
@@ -899,7 +901,64 @@ app.post('/fetch_projects',async function (req,res) {
 
     }
     
-})
+});
+
+app.post('/upload_templates',async function (req,res){
+
+    try{
+        console.log(req.files);
+        let htmlcontent = req.files.html_file.data.toString("utf-8");
+        let csscontent = req.files.css_file.data.toString("utf-8");
+
+        const docRef = await db.collection("web_templates").add({
+            html_code:htmlcontent,
+            css_code:csscontent
+          });
+      
+          console.log("Document added with ID:", docRef.id);
+
+    }
+    catch(error){
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+
+    }
+
+
+    
+});
+
+app.post('/fetch_templates',async function(req,res){
+
+    try{
+
+        const collectionRef = db.collection("web_templates"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        console.log(data);
+        res.json({data:data});
+
+
+
+    }
+    catch(error){
+
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+
+    }
+
+
+});
 app.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
