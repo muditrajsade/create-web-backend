@@ -934,9 +934,93 @@ app.post('/upload_templates',async function (req,res){
         let htmlcontent = req.files.html_file.data.toString("utf-8");
         let csscontent = req.files.css_file.data.toString("utf-8");
 
+        let imageMapping = JSON.parse(req.body.urls);;
+        console.log(imageMapping)
+        let iimn = Object.keys(imageMapping);
+
+        
+
+        let regex = /<img[^>]+src=["']([^'"]+)["'][^>]*>/g; // Regex to match <img> tags and capture the src attribute
+let matches;
+let srcArray = [];
+
+while ((matches = regex.exec(htmlcontent)) !== null) {
+  // matches[1] will contain the value of the src attribute
+  srcArray.push(matches[1]);
+}
+
+for(let cdfg = 0;cdfg<srcArray.length;cdfg++){
+    let iplgh = srcArray[cdfg].toString(); // Example local path
+
+    let indica = 0;
+    let temp ="";
+
+    for(let kkj = iplgh.length-1;kkj>=0;kkj--){
+
+        let ivcx = iplgh[kkj];
+
+        if(ivcx == '/'){
+            break;
+        }
+
+        if(ivcx == '.'){
+            indica = 1;
+            continue;
+        }
+
+        if(indica == 0){
+            continue;
+        }
+
+        if(indica == 1){
+            temp = ivcx + temp;
+
+        }
+
+    }
+    console.log(temp);
+    for(let rr=0;rr<iimn.length;rr++){
+        let dfg = iimn[rr];
+        if(dfg == temp){
+
+            let regex = /<img[^>]+src=["']([^'"]+)["'][^>]*>/g; // Regex to match <img> tags and capture the src attribute
+            let matches;
+            let srcrray = [];
+
+            while ((matches = regex.exec(htmlcontent)) !== null) {
+  // matches[1] will contain the value of the src attribute
+                if(matches[1] == iplgh){
+                    htmlcontent = htmlcontent.replace(matches[0], matches[0].replace(matches[1], imageMapping[dfg]));
+                    
+                    
+                }
+            }
+            
+        }
+    }
+    
+
+
+
+
+}
+
+const bodyContent = htmlcontent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+
+htmlcontent = bodyContent[1];
+
+        let newsd=[]
+        for(let rrfs = 0;rrfs<iimn.length;rrfs++){
+            newsd.push(imageMapping[iimn[rrfs]]);
+
+        }
+
+
+
         const docRef = await db.collection("web_templates").add({
             html_code:htmlcontent,
-            css_code:csscontent
+            css_code:csscontent,
+            url:[...newsd]
           });
       
           console.log("Document added with ID:", docRef.id);
