@@ -226,6 +226,32 @@ app.post('/parse_files',async function(req,res){
 
         }
 
+        if(abdf=="form"){
+
+            const docRef = await db.collection("forms").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
+        if(abdf=="inputs"){
+
+            const docRef = await db.collection("input").add({
+                html_code:htmlcontent,
+                css_code:csscontent,
+                bootstrap_css_used:xsw,
+                bootstrap_js_used:ksw
+              });
+          
+              console.log("Document added with ID:", docRef.id);
+
+        }
+
 
 
         
@@ -594,6 +620,51 @@ app.post('/fetch_all_button_group',async function(req,res){
 
 });
 
+app.post('/fetch_all_forms',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("forms"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        /*for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }*/
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
 app.post('/fetch_all_card',async function(req,res){
 
     try {
@@ -825,6 +896,51 @@ app.post('/fetch_all_navbar',async function(req,res){
 
     try {
         const collectionRef = db.collection("navbar_components"); // Replace with your collection name
+        const snapshot = await collectionRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: "No documents found!" });
+        }
+
+        let data = [];
+        snapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() }); // Include document ID in response
+        });
+
+        
+
+        /*for(let rcv=0;rcv<data.length;rcv++){
+            let ytr = data[rcv];
+            console.log(ytr);
+
+            let pplt = ytr.id;
+
+            ytr.html_code = "<div>" + ytr.html_code + "</div>";
+
+            
+
+
+
+
+
+        }*/
+
+        
+        console.log(data);
+        res.json({data:data});
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+
+
+
+});
+
+app.post('/fetch_all_inputs',async function(req,res){
+
+    try {
+        const collectionRef = db.collection("input"); // Replace with your collection name
         const snapshot = await collectionRef.get();
 
         if (snapshot.empty) {
